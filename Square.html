@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" width="800" height="600" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+
+//c.onclick = function() { alert("hello"); }
+// = run alert window
+
+//LeftCorner
+var x = 100;
+var y = 100;
+//FrameSize
+var w = 400;
+var h = 200;
+//VirtualPos:
+var vp_x = 0;
+var vp_y = 0;
+
+var state = false;
+
+//START::
+drawRect(x,y,w,h,"#00FF00");
+
+
+//draw Rect:
+function drawRect(x,y,w,h,clr) {
+  ctx.beginPath();
+  ctx.lineWidth = "2";
+  ctx.fillStyle = clr;
+	//coloring:
+        ctx.fillStyle = clr;
+        ctx.fillRect(x,y,w,h,clr);	//eg. color = "#FF0000"
+
+//  ctx.fillRect = clr(x,y,x+w,y+h);
+  ctx.rect(x,y,w,h);
+  ctx.stroke();
+}
+
+//obsolete;
+function printMousePos(event) {
+  document.body.textContent =
+    "clientX: " + event.clientX +	// <- get X-click;
+    " - clientY: " + event.clientY;	// <- get Y-click;
+}
+
+
+function inRect(i,j) {
+  res = false;
+  if ( x < i && i < x+w) 
+     if ( y < j && j < y+h) 
+        res = true;
+return res;
+}
+
+
+function onRectClick(event) {
+  if ( x < event.clientX && event.clientX < x+w) 
+     if ( y < event.clientY && event.clientY < y+h) {
+//        drawRect()
+        var clr;
+        if (state) clr = "#FF0000";
+        else       clr = "#00FF00";
+
+        state = !state;
+
+        ctx.fillStyle = clr; 
+
+//        ctx.fillRect(x,y,w,h,clr);
+        drawRect(x,y,w,h,clr);
+     }
+}
+
+//on click:
+document.addEventListener("click", onRectClick);
+
+
+
+
+//OnClick:
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ctx.beginPath();
+
+ctx.
+
+ctx.moveTo(x, y);
+ctx.lineTo(x+w, y);
+ctx.lineTo(x+w, y+h);
+ctx.lineTo(x, y+h);
+ctx.lineTo(x, y);
+
+ctx.stroke();*/
+
+</script>
+
+</body>
+</html>
+
