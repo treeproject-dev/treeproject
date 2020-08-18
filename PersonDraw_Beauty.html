@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" width="1000" height="800" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+
+   /* Initialization */
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+
+//Static :: for TreeFrame
+var distFramesX = w; 		// X axis distance between frames
+var distFramesX = 2*h; 	// Y axis distance between frames (generations)
+
+//Static :: for PersonFrame
+var w  = 2*64+32;
+var h  = 1*64;
+var dl = 4;	//distance to left
+var dt = 4;	//distance to top
+var ds = 18;    //distance between stings
+var fnt = 16;	// <- standard font size
+
+var femclr = "#FF8888";	//female colour
+var manclr = "#8888FF";	//male colour
+
+// /*
+
+//Draw Marriage double-line:
+// y is common for both;
+// x1 & x2 - x-coordinates of both frames;
+function drawMarriage(x1,x2,y) {
+
+  ctx.beginPath();
+
+  ctx.moveTo( x1 + w , y + h/2 - 2);
+  ctx.lineTo( x2 , y + h/2 - 2);
+
+  ctx.moveTo( x1 + w , y + h/2 + 2);
+  ctx.lineTo( x2 , y + h/2 + 2);
+
+  ctx.lineWidth = "1";
+  ctx.fillStyle = "#00FF00";
+  ctx.stroke();
+
+}
+
+//Draw Heir:
+// y is common for both;
+// x1 & x2 - x-coordinates of both frames;
+function drawHeir(fx,fy,mx,my,chx,chy) {
+
+  var dH = chy - (fy + my)/2;	// distance down
+  var vidX = (fx + mx)/2 + w/2;
+  var vidY = (fy + my)/2 + h/2;
+
+  ctx.beginPath();
+
+  ctx.moveTo( vidX , vidY );		// <- point A
+  ctx.lineTo( vidX , vidY + dH/2 );	//
+
+  ctx.lineTo( chx + w/2 , vidY + dH/2 );
+  ctx.lineTo( chx + w/2 , vidY + dH - h/2 );
+
+  ctx.lineWidth = "1";
+  ctx.fillStyle = "#00FF00";
+  ctx.stroke();
+
+}
+
+// */
+
+//Draw Person
+function drawPerson(name,surname,gender,birth,death,x,y) {
+var color;
+
+  if (gender == 'U') {
+     drawRect(x,y,w,h,"#BBBBCC");
+     writeInfo( x + 4*dl , y + w/4 , "Unknown", 3*fnt/2 );
+  } else { 
+       if (gender == 'F') {color = femclr} 
+          else            {color = manclr};
+     drawRect(x,y,w,h,color); 
+
+     //text block
+     writeInfo( x+dl, y +   ds , name, fnt );
+     writeInfo( x+dl, y + 2*ds , surname, fnt );
+     writeInfo( x+dl, y + 3*ds , birth+" -- "+death, 3*fnt/4 );
+  }
+}
+
+
+//Draw Rect:
+function drawRect(x,y,w,h,clr) {
+  ctx.beginPath();
+  ctx.lineWidth = "2";
+  ctx.fillStyle = clr;
+	//coloring:
+        ctx.fillStyle = clr;
+        ctx.fillRect(x,y,w,h,clr);
+  ctx.rect(x,y,w,h);
+  ctx.stroke();
+}
+
+//Draw Double Line:
+function drawDoubleLine(x1,x2,y,clr) {
+  ctx.beginPath();
+  ctx.lineWidth = "1";
+  //ctx.fillStyle = "#FFFFFF";
+	//coloring:
+  //      ctx.fillRect(x,y,w,h,"#FFFFFF");
+//  ctx.rect(x1+w,y+h/2-1, (x2 - x1 - w) ,2);
+ // ctx.moveTo(   0 ,   0);
+ // ctx.LineTo( 200 , 200);
+  ctx.stroke();
+}
+
+
+//Fill Frame with text
+function writeInfo(x,y,str,size) {
+  ctx.fillStyle = "#000000";
+  ctx.font = "normal " + size + "px Verdana";
+  ctx.fillText(str,x,y);
+}
+
+//////////////
+
+//SetPerson P1:
+var p1_name    = "Alexander"
+var p1_surname = "Pushkin"
+var p1_birth   = "26.05.1799"//"26 may 1799"
+var p1_death   = "29.01.1837"//"29 january 1837"
+var p1_gender  = 'M';
+var p1_posX    = w;
+var p1_posY    = 100;
+
+//SetPerson P2:
+var p2_name    = "Maria";
+var p2_surname = "Magdalena";
+var p2_birth   = "4 august";
+var p2_death   = "";
+var p2_gender  = 'F';
+var p2_posX    = 3*w;
+var p2_posY    = 100;
+
+//SetPerson P3:
+var p3_gender  = "U";
+var p3_posX    = (p1_posX + p2_posX) / 2;
+var p3_posY    = 435;
+
+//SetPerson P4:
+var p4_gender  = "U";
+var p4_posX    = 100;
+var p4_posY    = 435;
+
+//SetPerson P5:
+var p5_gender  = "U";
+var p5_posX    = 550;
+var p5_posY    = 435;
+
+//SetPerson P6:
+var p6_gender  = "U";
+var p6_posX    = 750;
+var p6_posY    = 435;
+
+//SetPerson P6:
+var p7_gender  = "U";
+var p7_posX    = 750;
+var p7_posY    = 650;
+
+//////////////////////////
+//////////////////////////
+
+
+   /* START */
+
+writeInfo( 0+dl, 0 +   ds , name, 24 );
+
+//drawDoubleLine(200,300);
+
+drawPerson(p1_name,p1_surname,p1_gender,p1_birth,p1_death,
+           p1_posX,p1_posY);
+
+drawPerson(p2_name,p2_surname,p2_gender,p2_birth,p2_death,
+           p2_posX,p2_posY);
+
+drawPerson("","",p3_gender,"","",
+	   p3_posX,p3_posY);
+
+drawPerson("","",p4_gender,"","",
+	   p4_posX,p4_posY);
+
+drawPerson("","",p5_gender,"","",
+	   p5_posX,p5_posY);
+
+drawMarriage(p1_posX,p2_posX,p1_posY);
+
+drawHeir(p1_posX,p1_posY,p2_posX,p2_posY,p3_posX,p3_posY);
+
+drawHeir(p1_posX,p1_posY,p2_posX,p2_posY,p4_posX,p4_posY);
+
+drawHeir(p1_posX,p1_posY,p2_posX,p2_posY,p5_posX,p5_posY);
+
+drawPerson("","",p6_gender,"","",
+	   p6_posX,p6_posY);
+
+drawHeir(p1_posX,p1_posY,p2_posX,p2_posY,p6_posX,p6_posY);
+
+
+drawMarriage(p3_posX,p5_posX,p3_posY);
+
+drawHeir(p3_posX,p3_posY,p5_posX,p5_posY,p7_posX,p7_posY);
+
+drawPerson("","",p7_gender,"","",
+	   p7_posX,p7_posY);
+
+
+
+//justLine();
+
+
+//////////////////////////
+//////////////////////////
+
+/* Interaction */
+
+//if Click into Rectangle AB: A(x,y), B(x+w,y+h)
+function inRect(i,j) {
+  res = false;
+  if ( x < i && i < x+w) 
+     if ( y < j && j < y+h) 
+        res = true;
+return res;
+}
+
+//OnClick:
+function onRectClick(event) {
+  if ( x < event.clientX && event.clientX < x+w) 
+     if ( y < event.clientY && event.clientY < y+h) {
+//        drawRect()
+        var clr;
+        if (state) clr = femclr;
+        else       clr = manclr;
+
+        state = !state;
+
+        ctx.fillStyle = clr; 
+
+//        ctx.fillRect(x,y,w,h,clr);
+        drawRect(x,y,w,h,clr);
+	pushkin();
+     }
+}
+
+
+//SEEMS: RUN ONCLICK;
+//document.addEventListener("click", onRectClick);
+
+
+
+</script>
+
+</body>
+</html>
+
