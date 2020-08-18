@@ -1,14 +1,16 @@
 package treeproject;
 
-import java.time.LocalDate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class Person {
-	public String firstName, surName;
-	public LocalDate dateBirth, death;
+	public String firstName, surName, gender;
+	public Date dateBirth, death;
 	public Person myFather;
-	public Person myMother;
-	public Gender gender;
-	public int age;
+	public Person myMother;		
+	public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	public Person() {
 		this.firstName = "First Name";
@@ -17,7 +19,7 @@ public class Person {
 	}
 
 //constructers
-	public Person(String firstName, String surName, Gender gender, LocalDate dateBirth) {
+	public Person(String firstName, String surName, String gender, Date dateBirth) {
 		this.firstName = firstName;
 		this.surName = surName;
 		this.gender = gender;
@@ -25,7 +27,7 @@ public class Person {
 
 	}
 
-	public Person(String firstName, String surName, Gender gender, LocalDate dateBirth, LocalDate death, Person father,
+	public Person(String firstName, String surName, String gender,Date dateBirth,Date death, Person father,
 			Person mother) {
 		this.firstName = firstName;
 		this.surName = surName;
@@ -53,21 +55,22 @@ public class Person {
 		this.surName = surName;
 	}
 
-	public LocalDate getDateBirth() {
+	public Date getDateBirth() {
 
 		return dateBirth;
 	}
 
-	public void setDateBirth(LocalDate dateBirth) {
+	public void setDateBirth(Date dateBirth) {
+		
 
 		this.dateBirth = dateBirth;
 	}
 
-	public LocalDate getDeath() {
+	public Date getDeath() {
 		return death;
 	}
 
-	public void setDeath(LocalDate death) {
+	public void setDeath(Date death) {
 
 		this.death = death;
 	}
@@ -88,18 +91,23 @@ public class Person {
 		this.myMother = myMother;
 	}
 
-	public Gender getGender() {
+	public String getGender() {
 		return gender;
 	}
 
-	public void setGender(Gender gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 
 	@Override
 	public String toString() {
 
-		return firstName + " " + surName + " " + gender + " " + dateBirth + " ";
+		return firstName + " " + surName + " " + gender + " " + simpleDateFormat.format(dateBirth) + " ";
 	}
-
+	public static void main(String[]args) throws ParseException {
+	Person p11 = new Person("Maria", "Spring", "Female",simpleDateFormat.parse("1993-05-06") );
+	String p12 = simpleDateFormat.format(p11.getDateBirth());
+	System.out.println(p12);
+	System.out.println(p11);
+	}
 }

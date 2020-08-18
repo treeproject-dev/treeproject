@@ -1,12 +1,11 @@
 package treeproject;
-
 import java.util.Date;
 
 public class Wedding {
 
-	private Date weddingDate;
+	public Date weddingDate;
 
-	private Couple couple;
+	public Couple couple;
 
 	public Wedding(Date date, Couple c) {
 
