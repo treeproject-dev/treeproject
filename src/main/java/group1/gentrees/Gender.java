@@ -1,4 +1,4 @@
-package treeproject;
+package group1.gentrees;
 
 public enum Gender {
     /** Male. */

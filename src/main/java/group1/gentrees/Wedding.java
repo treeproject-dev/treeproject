@@ -1,4 +1,4 @@
-package treeproject;
+package group1.gentrees;
 
 import java.util.Date;
 

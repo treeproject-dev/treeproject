@@ -1,13 +1,14 @@
-package treeproject;
+package group1.gentrees;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 public class Person {
 	public String firstName, surName;
-	public LocalDate dateBirth, death;
+	public Date dateBirth, death;
 	public Person myFather;
 	public Person myMother;
-	public Gender gender;
+	public String gender;
 	public int age;
 
 	public Person() {
@@ -17,7 +18,7 @@ public class Person {
 	}
 
 //constructers
-	public Person(String firstName, String surName, Gender gender, LocalDate dateBirth) {
+	public Person(String firstName, String surName, String gender, Date dateBirth) {
 		this.firstName = firstName;
 		this.surName = surName;
 		this.gender = gender;
@@ -25,7 +26,7 @@ public class Person {
 
 	}
 
-	public Person(String firstName, String surName, Gender gender, LocalDate dateBirth, LocalDate death, Person father,
+	public Person(String firstName, String surName, String gender, Date dateBirth, Date death, Person father,
 			Person mother) {
 		this.firstName = firstName;
 		this.surName = surName;
@@ -53,21 +54,21 @@ public class Person {
 		this.surName = surName;
 	}
 
-	public LocalDate getDateBirth() {
+	public Date getDateBirth() {
 
 		return dateBirth;
 	}
 
-	public void setDateBirth(LocalDate dateBirth) {
+	public void setDateBirth(Date dateBirth) {
 
 		this.dateBirth = dateBirth;
 	}
 
-	public LocalDate getDeath() {
+	public Date getDeath() {
 		return death;
 	}
 
-	public void setDeath(LocalDate death) {
+	public void setDeath(Date death) {
 
 		this.death = death;
 	}
@@ -88,11 +89,11 @@ public class Person {
 		this.myMother = myMother;
 	}
 
-	public Gender getGender() {
+	public String getGender() {
 		return gender;
 	}
 
-	public void setGender(Gender gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 
