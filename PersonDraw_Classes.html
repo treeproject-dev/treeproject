@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" width="1000" height="700" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<p id="screen-log"></p>
+
+
+<script>
+
+   /* Initialization */
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+var log = "";
+
+//global variables;
+var clickPosX;
+var clickPosY;
+var curPosX;
+var curPosY;
+var movement = false;
+
+
+	/* CLASS */
+
+class PersonFrame {
+
+  //FrameSize:
+  static w = 128+32;
+  static h = 64;
+
+  //Indents:
+  static indL = 4;  		// indent from Left
+  static indT = 4;  		// indent from Top
+  static font = 16;  		// standart font Size;
+  static thrS = 18;		// threshold between Strings;
+
+  //Colours:
+  static femclr = "#FF8888";	//  female colour
+  static manclr = "#8888FF";	//    male colour
+  static uknclr = "#BBBBCC";	// unknown colour
+
+  //Constructor
+  constructor() {
+    //Unknown-Person Constructor;
+	// perhaps: setPerson("","",'U',"","");
+    this.gender  = 'U';
+  }
+
+  //[+]Set Technical parameters for Frame
+  setFrame(x,y,active,hiden,move) {
+    this.x = x;
+    this.y = y;
+    this.active = active;
+    this.hiden = hiden;
+    this.move  = move;
+  }
+
+  //[+]Set Person's data
+  setPerson(name,surname,gender,birth,death) {
+    this.name 	 = name;
+    this.surname = surname;
+    this.gender  = gender;
+    this.birth   = birth;
+    this.death   = death;
+  }
+
+  //[-] <- there is a threshold between Canvas and Page that is not admited.
+  isInside(i,j) {
+    var result = false;
+    if (this.getX() < i && i < this.getX() + PersonFrame.w)
+       if (this.getY() < j && j < this.getY() + PersonFrame.h)
+          result = true;
+    return result;
+  }
+
+  //getters
+  getX() {
+    var result;
+    if (this.move) {result = this.x + curPosX;}
+    else {result = this.x;}
+  return result;
+  }
+
+  getY() {
+    var result;
+    if (this.move) {result = this.y + curPosY;}
+    else {result = this.y;}
+  return result;
+  }
+
+
+  //Main OnClick-Function;
+  onClick(event) {
+     if (this.isInside(event.clientX,event.clientY)) {
+	log = log + "Pushkin is Clicked.";
+        this.active = !(this.active);
+
+        // When Move Frame:
+        if (this.move) {	// <!>
+         this.x = this.x + curPosX;
+         this.y = this.y + curPosY;
+         curPosX = 0;
+         curPosY = 0;
+        }
+
+        this.move = !(this.move);
+
+//        this.x = this.x + 50;
+//	if (this.gender == 'M') {this.gender = 'F'}
+//           else {this.gender = 'M'}
+
+        reDraw();	// <- canvas-invalidation;
+     }
+  }
+
+  //Move event for this PersonFrame:
+  onMove(event) {
+     if (this.move) { //<!>
+  	       curPosX = (event.clientX - clickPosX);
+         curPosY = (event.clientY - clickPosY);
+         reDraw();
+     }
+//        this.clickPosX = event.
+  }
+
+
+  //Event in case of isInside:
+  onMouseDown() {
+    //what happens, if you click inside PersonFrame;
+  }  
+
+  onMouseUp() {
+    //
+  }
+
+  //[+] Draw Current Person (frame + data)
+  draw() {
+    this.drawRect();
+    this.writeInfo();
+  }
+
+  //[+] Fill Frame with Data;
+  writeInfo() {
+    var fnt  = PersonFrame.font;
+    var dl   = PersonFrame.indL;
+    var dh   = PersonFrame.indT + fnt;
+    var left = this.getX() + dl;
+    var top  = this.getY() + dh;
+
+    if (this.gender != 'U') { // <- if Known
+       var life = this.birth + " - " + this.death;
+       PersonFrame.writeStr( left, top      , this.name, fnt )
+       PersonFrame.writeStr( left, top + dh , this.surname, fnt )
+       PersonFrame.writeStr( left, top + 7*dh/4 , life, fnt*2/3 )
+    } else { //<- if Unknown
+       PersonFrame.writeStr( left + 3*dl, top + dh , "Unknown", 3*fnt/2 )
+    }
+  }
+
+  /// Private:
+
+  //[+] Gender -> Color;
+  getColor() {
+    var color;
+    if (this.gender == 'F') {color = PersonFrame.femclr;}
+    else if (this.gender == 'M') {color = PersonFrame.manclr;}
+         else {color = PersonFrame.uknclr;}
+    return color;
+  }
+
+  //[+] Draw Form;
+  drawRect() {
+    var color = this.getColor()
+//    var xx = this.x+curPosX;
+//    var yy = this.y+curPosY;
+    ctx.beginPath();
+    if (this.active) {var l = "4"}
+       else {var l = "2"}
+    ctx.lineWidth = l;
+    ctx.fillStyle = color;
+	//coloring:
+        ctx.fillStyle = color;
+        ctx.fillRect(this.getX(),this.getY(),PersonFrame.w,PersonFrame.h,color);
+  ctx.rect(this.getX(),this.getY(),PersonFrame.w,PersonFrame.h);
+  ctx.stroke();
+  }
+
+  //[+] Write String with (x,y) - left bottom position of the string;
+  static writeStr(x,y,str,size) {
+    ctx.fillStyle = "#000000";
+    ctx.font = "normal " + size + "px Verdana";
+    ctx.fillText(str,x,y);
+  }
+
+} //<- END of CLASS;
+
+
+	/* Common functions */
+
+function drawWedLock(p1,p2) {
+
+  var y = ( p1.getY() + p2.getY() + PersonFrame.h ) / 2;
+
+  // when X1 < X2:
+  var xL = ( p1.getX() + PersonFrame.w );
+  var xR = p2.getX();
+
+  ctx.beginPath();
+
+  ctx.moveTo( xL , y - 2);
+  ctx.lineTo( xR , y - 2);
+
+  ctx.moveTo( xL , y + 2);
+  ctx.lineTo( xR , y + 2);
+
+  ctx.lineWidth = "1";
+  ctx.fillStyle = "#00FF00";
+  ctx.stroke();
+
+}
+
+
+function drawHeir(father,mother,child) {
+
+  // distance down
+  var dH = child.getY() - (father.getY() + mother.getY())/2;	
+  var vidX = (father.getX() + mother.getX())/2 + PersonFrame.w/2;
+  var vidY = (father.getY() + mother.getY())/2 + PersonFrame.h/2;
+
+  ctx.beginPath();
+
+  ctx.moveTo( vidX , vidY );		// <- point A
+  ctx.lineTo( vidX , vidY + dH/2 );	//
+
+  ctx.lineTo( child.getX() + PersonFrame.w/2 , vidY + dH/2 );
+  ctx.lineTo( child.getX() + PersonFrame.w/2 , vidY + dH - PersonFrame.h/2 );
+
+  ctx.lineWidth = "1";
+  ctx.fillStyle = "#00FF00";
+  ctx.stroke();
+
+}
+
+
+
+//Draw Marriage double-line:
+// y is common for both;
+// x1 & x2 - x-coordinates of both frames;
+function drawMarriage(x1,x2,y) {
+
+  ctx.beginPath();
+
+  ctx.moveTo( x1 + w , y + h/2 - 2);
+  ctx.lineTo( x2 , y + h/2 - 2);
+
+  ctx.moveTo( x1 + w , y + h/2 + 2);
+  ctx.lineTo( x2 , y + h/2 + 2);
+
+  ctx.lineWidth = "1";
+  ctx.fillStyle = "#00FF00";
+  ctx.stroke();
+
+}
+
+//Draw Heir:
+// y is common for both;
+// x1 & x2 - x-coordinates of both frames;
+/*
+function drawHeir(fx,fy,mx,my,chx,chy) {
+
+  var dH = chy - (fy + my)/2;	// distance down
+  var vidX = (fx + mx)/2 + w/2;
+  var vidY = (fy + my)/2 + h/2;
+
+  ctx.beginPath();
+
+  ctx.moveTo( vidX , vidY );		// <- point A
+  ctx.lineTo( vidX , vidY + dH/2 );	//
+
+  ctx.lineTo( chx + w/2 , vidY + dH/2 );
+  ctx.lineTo( chx + w/2 , vidY + dH - h/2 );
+
+  ctx.lineWidth = "1";
+  ctx.fillStyle = "#00FF00";
+  ctx.stroke();
+
+}
+*/
+
+
+
+
+
+
+ /* PERSON INITIALIZATION */
+
+//CREATE PERSON FROM CLASS::
+
+
+/*
+var person1 = new PersonFrame();
+person1.setPerson("Alexander","Pushkin",'M',"26.05.1799","29.01.1837");
+person1.setFrame(10,10,false,false,false);
+////
+var person2 = new PersonFrame();
+person2.setPerson("Alexandra","Pushkina",'F',"","");
+person2.setFrame(10,110,false,false,false);
+////
+var person3 = new PersonFrame();
+person3.setPerson("","",'U',"","");
+person3.setFrame(10,210,false,false,false);
+////
+*/
+
+/* BasicFamilty */
+var grandfatherF = new PersonFrame();
+grandfatherF.setPerson("GrandFather","",'M',"","");
+grandfatherF.setFrame(50,50,false,false,false);
+////
+var grandmotherF = new PersonFrame();
+grandmotherF.setPerson("GrandMother","",'F',"","");
+grandmotherF.setFrame(250,50,false,false,false);
+////
+var grandfatherM = new PersonFrame();
+grandfatherM.setPerson("GrandFather","",'M',"","");
+grandfatherM.setFrame(550,50,false,false,false);
+////
+var grandmotherM = new PersonFrame();
+grandmotherM.setPerson("GrandMother","",'F',"","");
+grandmotherM.setFrame(750,50,false,false,false);
+////
+var father = new PersonFrame();
+father.setPerson("Father","",'M',"","");
+father.setFrame(250,200,false,false,false);
+////
+var mother = new PersonFrame();
+mother.setPerson("Mother","",'F',"","");
+mother.setFrame(450,200,false,false,false);
+////
+var unkle = new PersonFrame();
+unkle.setPerson("Unkle","",'M',"","");
+unkle.setFrame(650,200,false,false,false);
+////
+var son1 = new PersonFrame();
+son1.setPerson("The First Son","",'M',"","");
+son1.setFrame(150,400,false,false,false);
+////
+var son2 = new PersonFrame();
+son2.setPerson("The Second Son","",'M',"","");
+son2.setFrame(350,400,false,false,false);
+////
+var daughter = new PersonFrame();
+daughter.setPerson("Daughter","",'F',"","");
+daughter.setFrame(600,400,false,false,false);
+////
+var someone = new PersonFrame();
+someone.setPerson("","",'U',"","");
+someone.setFrame(800,400,false,false,false);
+////
+var grandson = new PersonFrame();
+grandson.setPerson("Grandson","",'M',"","");
+grandson.setFrame(700,600,false,false,false);
+
+
+	/* CANVAS EVENTS */
+
+document.addEventListener('mousemove', logKey);
+
+document.addEventListener('click', e => {clickPosX = e.clientX; 
+				         clickPosY = e.clientY;});
+
+/*
+document.addEventListener("click", e => {person1.onClick(e)});
+document.addEventListener("click", e => {person2.onClick(e)});
+document.addEventListener("click", e => {person3.onClick(e)});
+*/
+
+//Family
+document.addEventListener("click", e => {grandfatherF.onClick(e)});
+document.addEventListener("click", e => {grandmotherF.onClick(e)});
+document.addEventListener("click", e => {grandfatherM.onClick(e)});
+document.addEventListener("click", e => {grandmotherM.onClick(e)});
+document.addEventListener("click", e => {father.onClick(e)});
+document.addEventListener("click", e => {mother.onClick(e)});
+document.addEventListener("click", e => {unkle.onClick(e)});
+document.addEventListener("click", e => {son1.onClick(e)});
+document.addEventListener("click", e => {son2.onClick(e)});
+document.addEventListener("click", e => {daughter.onClick(e)});
+document.addEventListener("click", e => {someone.onClick(e)});
+document.addEventListener("click", e => {grandson.onClick(e)});
+
+/*
+document.addEventListener('mousemove', e => {person1.onMove(e)});
+document.addEventListener('mousemove', e => {person2.onMove(e)});
+document.addEventListener('mousemove', e => {person3.onMove(e)});
+*/
+
+//Family
+document.addEventListener('mousemove', e => {grandfatherF.onMove(e)});
+document.addEventListener('mousemove', e => {grandmotherF.onMove(e)});
+document.addEventListener('mousemove', e => {grandfatherM.onMove(e)});
+document.addEventListener('mousemove', e => {grandmotherM.onMove(e)});
+document.addEventListener('mousemove', e => {father.onMove(e)});
+document.addEventListener('mousemove', e => {mother.onMove(e)});
+document.addEventListener('mousemove', e => {unkle.onMove(e)});
+document.addEventListener('mousemove', e => {son1.onMove(e)});
+document.addEventListener('mousemove', e => {son2.onMove(e)});
+document.addEventListener('mousemove', e => {daughter.onMove(e)});
+document.addEventListener('mousemove', e => {grandson.onMove(e)});
+document.addEventListener('mousemove', e => {someone.onMove(e)});
+
+
+
+	/* DRAW */
+
+function clearCanvas() {
+  ctx.beginPath();
+  ctx.clearRect(0,0,1000,800);
+  ctx.stroke();
+}
+
+// Draws ALL on the Canvas.
+function reDraw() {
+  clearCanvas();
+/*
+  person1.draw();
+  person2.draw();
+  person3.draw();
+*/
+  //Weddings:
+  drawWedLock(grandfatherF,grandmotherF);
+  drawWedLock(grandfatherM,grandmotherM);
+  drawWedLock(father,mother);
+  drawWedLock(daughter,someone);
+
+  //Heirs:
+  drawHeir(father,mother,son1);
+  drawHeir(father,mother,son2);
+  drawHeir(father,mother,daughter);
+  drawHeir(grandfatherM,grandmotherM,mother);
+  drawHeir(grandfatherM,grandmotherM,unkle);
+  drawHeir(grandfatherF,grandmotherF,father);
+  drawHeir(someone,daughter,grandson);
+
+  //Family
+  grandfatherF.draw();
+  grandmotherF.draw();
+  grandfatherM.draw();
+  grandmotherM.draw();
+  father.draw();
+  unkle.draw();
+  mother.draw();
+  son1.draw();
+  son2.draw();
+  daughter.draw();
+  grandson.draw();
+  someone.draw();
+
+}
+
+// OTHER: LOG-BAR::
+
+screenLog = document.querySelector('#screen-log');
+
+function logKey(e) {
+    var b = person1.isInside(e.clientX,e.clientY);
+  screenLog.innerText = `
+    Screen X/Y: ${e.screenX}, ${e.screenY}
+    Client X/Y: ${e.clientX}, ${e.clientY}
+    ClickPos X/Y: ${clickPosX}, ${clickPosY}
+    Person ${person1.surname}, ${person1.x}, ${person1.y}, ${person1.x + PersonFrame.w}, ${person1.x + PersonFrame.h}
+    Inside: ${b}
+    Log: ${log}`;    
+}
+
+
+	 /* RUN */
+
+reDraw();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////OLD:::
+
+//Static :: for TreeFrame
+var distFramesX = w; 		// X axis distance between frames
+var distFramesX = 2*h; 	// Y axis distance between frames (generations)
+
+//SEEMS: RUN ONCLICK;
+//document.addEventListener("click", onRectClick);
+
+</script>
+
+
+
+</body>
+</html>
+
