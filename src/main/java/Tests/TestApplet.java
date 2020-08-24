@@ -2,6 +2,7 @@ package Tests;
 
 import java.applet.Applet;
 import java.awt.HeadlessException;
+//import javax.swing.JApplet;
 
 public class TestApplet extends Applet {
 
